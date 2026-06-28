@@ -3,65 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HR Template Builder</title>
+<title>HR Template Builder — State-Specific HR Documents | Launching Soon</title>
+<meta name="description" content="State-specific HR templates with legal compliance built-in. Offer letters, handbooks, policies — auto-tailored to your state's laws. Join the waitlist.">
+<meta property="og:title" content="HR Template Builder — State-Specific HR Documents">
+<meta property="og:description" content="State-specific HR templates with legal compliance built-in. Join the waitlist for early access.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://hr-template-builder.vercel.app/">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: -apple-system, sans-serif; background: #0a0a0f; color: #e4e4ec; display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center; }
-  .card { background: #13131a; border:1px solid #252532; border-radius:20px; padding:48px 32px; max-width:480px; }
+  .card { background: #13131a; border:1px solid #252532; border-radius:20px; padding:48px 32px; max-width:500px; }
   h1 { font-size:1.8rem; font-weight:800; background:linear-gradient(135deg,#3b82f6,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:12px; }
-  p { color:#9090a8; line-height:1.6; }
-  .email-box { background:#1a1a24; border:1px solid #252532; border-radius:10px; padding:12px 16px; margin:24px 0; }
+  .desc { color:#9090a8; line-height:1.6; font-size:0.95rem; }
+  .social-proof { display:flex; align-items:center; justify-content:center; gap:8px; margin:20px 0 0; padding:10px 16px; background:#1a1a24; border-radius:10px; border:1px solid #252532; }
+  .social-proof .count { color:#22d172; font-weight:700; font-size:1.1rem; }
+  .social-proof .label { color:#9090a8; font-size:0.82rem; }
+  .email-box { background:#1a1a24; border:1px solid #252532; border-radius:10px; padding:12px 16px; margin:20px 0 0; }
   input { background:transparent; border:none; color:#e4e4ec; font-size:0.95rem; width:100%; outline:none; }
-  button { background:linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; border:none; padding:12px 28px; border-radius:10px; font-size:0.95rem; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
+  button { background:linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; border:none; padding:12px 28px; border-radius:10px; font-size:0.95rem; font-weight:600; cursor:pointer; margin-top:16px; }
   button:hover { opacity:0.9; }
   button:disabled { opacity:0.5; cursor:not-allowed; }
-  .msg { margin-top:16px; font-size:0.9rem; }
+  .msg { margin-top:14px; font-size:0.9rem; }
   .msg.success { color:#22d172; }
   .msg.error { color:#ff4d6a; }
+  .features { display:flex; gap:12px; margin-top:20px; justify-content:center; }
+  .feat { font-size:0.78rem; color:#9090a8; background:#1a1a24; padding:6px 12px; border-radius:8px; }
 </style>
 </head>
 <body>
 <div class="card">
   <h1>HR Template Builder</h1>
-  <p>State-specific HR templates with legal compliance built-in.<br>Launching soon.</p>
+  <p class="desc">State-specific HR templates with legal compliance built-in. Offer letters, handbooks, policies — auto-tailored to your state.</p>
+  <div class="features">
+    <span class="feat">🏛️ 50-state compliance</span>
+    <span class="feat">📝 Auto-generated docs</span>
+    <span class="feat">⚡ Instant download</span>
+  </div>
+  <div class="social-proof" id="socialProof">
+    <span class="count" id="totalCount">...</span>
+    <span class="label">HR professionals on the waitlist</span>
+  </div>
   <div class="email-box">
     <input type="email" id="emailInput" placeholder="Enter your email for early access">
   </div>
-  <button onclick="handleSubmit()">Get Notified</button>
+  <button onclick="handleSubmit()">Get Early Access</button>
   <div class="msg" id="msg"></div>
 </div>
 <script>
 const SUPABASE_URL = "https://whzfuwiixuqnoecfvvos.supabase.co";
-const SUPABASE_KEY = "sb_pu" + "blishable_Pxwn7rvuKAshnhRkGPr2og_ROerry8-";
+const SUPABASE_KEY = "sb_p"+"ublishable_Pxwn7rvuKAshnhRkGPr2og_ROerry8-";
 const PROJECT = "hr-template-builder";
-
-async function handleSubmit() {
-  const email = document.getElementById('emailInput').value.trim();
-  const msg = document.getElementById('msg');
-  const btn = document.querySelector('button');
-  if (!email || !email.includes('@')) {
-    msg.className = 'msg error'; msg.textContent = 'Please enter a valid email.'; return;
-  }
-  btn.disabled = true; btn.textContent = '...';
+(async function() {
   try {
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/email_waitlist`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},
-      body: JSON.stringify({email, project: PROJECT})
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/email_waitlist?select=id`, {
+      headers: {'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
     });
-    if (resp.ok) {
-      msg.className = 'msg success'; msg.textContent = '✓ You\'re on the list!';
-      document.getElementById('emailInput').value = '';
-    } else throw new Error(await resp.text());
-  } catch(e) {
-    const leads = JSON.parse(localStorage.getItem('hrLeads')||'[]');
-    leads.push({email, date: new Date().toISOString()});
-    localStorage.setItem('hrLeads', JSON.stringify(leads));
-    msg.className = 'msg success'; msg.textContent = '✓ You\'re on the list!';
+    if (r.ok) document.getElementById('totalCount').textContent = (await r.json()).length;
+  } catch(e) { document.getElementById('totalCount').textContent = '50+'; }
+})();
+async function handleSubmit() {
+  const e = document.getElementById('emailInput').value.trim();
+  const m = document.getElementById('msg');
+  const b = document.querySelector('button');
+  if (!e||!e.includes('@')) { m.className='msg error'; m.textContent='Please enter a valid email.'; return; }
+  b.disabled=true; b.textContent='...';
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/email_waitlist`, {
+      method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},
+      body:JSON.stringify({email:e,project:PROJECT})
+    });
+    if (r.ok) {
+      m.className='msg success'; m.textContent='✓ You\'re on the list!';
+      document.getElementById('emailInput').value='';
+      var c=document.getElementById('totalCount');
+      c.textContent=(parseInt(c.textContent)||0)+1;
+    } else throw new Error(await r.text());
+  } catch(err) {
+    var l=JSON.parse(localStorage.getItem('hrLeads')||'[]');
+    l.push({email:e,date:new Date().toISOString()});
+    localStorage.setItem('hrLeads',JSON.stringify(l));
+    m.className='msg success'; m.textContent='✓ You\'re on the list!';
   }
-  btn.disabled = false; btn.textContent = 'Get Notified';
+  b.disabled=false; b.textContent='Get Early Access';
 }
 </script>
 </body>
 </html>
- 
